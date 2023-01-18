@@ -7,6 +7,7 @@ import (
   "math/rand"
   "net/http"
   "strconv"
+  "fmt"
 )
 
 type Book struct {
@@ -26,6 +27,7 @@ var books []Book
 // Get All Books
 func getBooks(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
+  fmt.Println(json.NewEncoder(w))
   json.NewEncoder(w).Encode(books)
 }
 
@@ -98,6 +100,8 @@ func main() {
   books = append(books, Book{ID: "1", Title: "Book one", Author: &Author{FirstName: "tanjiro", LastName: "kamado"}})
   books = append(books, Book{ID: "2", Title: "Book two", Author: &Author{FirstName: "John", LastName: "Johnson"}})
 
+  fmt.Println(books)
+
   // エンドポイント
   r.HandleFunc("/api/books", getBooks).Methods("GET")
   r.HandleFunc("/api/books/{id}", getBook).Methods("GET")
@@ -105,5 +109,6 @@ func main() {
   r.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
   r.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
 
+  // http.ServeMuxがデフォルトだが今回はルータを渡している
   log.Fatal(http.ListenAndServe(":8000", r))
 }

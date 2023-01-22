@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,11 +12,12 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
-		// users := Users{}
-		// user := db.Find(&users)
+		var result Product
+		db.Last(&result).Scan(&result)
+		fmt.Println(result)
 		c.JSON(200, gin.H{
 			"message": "成功",
-			"test": "hoge",
+			"test": "aaaaaaa",
 		})
 	})
 	r.POST("/create", func(c *gin.Context) {

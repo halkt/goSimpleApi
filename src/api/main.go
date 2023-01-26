@@ -1,29 +1,54 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
+type Product struct {
+	gorm.Model
+	Code  string
+	Price uint
+}
+
+type User struct {
+	gorm.Model
+	NickName    string `json:"nickName"`
+	Description string `json:"Description"`
+}
+
+type Blog struct {
+	gorm.Model
+	Title string `json:"Title"`
+}
+
+type PostProduct struct {
+	Code  string `json:"code"`
+	Price int    `json:"price"`
+}
+
 func main() {
 	db := DBMigrate(DBConnect())
 
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		var result Product
-		db.Last(&result).Scan(&result)
-		fmt.Println(result)
+
+	r.GET("/product/:id", func(c *gin.Context) {
+		var product Product
+		db.First(&product, c.Param("id")).Scan(&product)
 		c.JSON(200, gin.H{
-			"message": "成功",
-			"test": "aaaaaaa",
+			"id":    product.ID,
+			"price": product.Price,
+			"code":  product.Code,
 		})
 	})
 	r.POST("/create", func(c *gin.Context) {
-		create(db, "D11", 1000)
+		var product PostProduct
+		c.BindJSON(&product)
 		c.JSON(200, gin.H{
-			"message": "登録成功",
+			"message": "登録成功!",
+			"price":   product.Price,
+			"code":    product.Code,
 		})
 	})
 	r.GET("/404", func(c *gin.Context) {
@@ -34,26 +59,6 @@ func main() {
 	r.Run(":8080")
 }
 
-type Product struct {
-  gorm.Model
-  Code  string
-  Price uint
-}
-
-type User struct {
-	gorm.Model
-	NickName string `json:"nickName"`
-	Description string `json:"Description"`
-}
-
-type Blog struct {
-	gorm.Model
-	Title string `json:"Title"`
-}
-
-// Array of User
-type Users []User
-
 func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Blog{})
@@ -63,7 +68,7 @@ func DBMigrate(db *gorm.DB) *gorm.DB {
 
 func create(db *gorm.DB, code string, price uint) *gorm.DB {
 	db.Create(&Product{
-		Code: code,
+		Code:  code,
 		Price: price,
 	})
 	return db

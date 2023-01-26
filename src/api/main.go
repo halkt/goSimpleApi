@@ -8,8 +8,8 @@ import (
 
 type Product struct {
 	gorm.Model
-	Code  string
-	Price uint
+	Code  string `json:"code"`
+	Price uint   `json:"price"`
 }
 
 type User struct {
@@ -21,11 +21,6 @@ type User struct {
 type Blog struct {
 	gorm.Model
 	Title string `json:"Title"`
-}
-
-type PostProduct struct {
-	Code  string `json:"code"`
-	Price int    `json:"price"`
 }
 
 func main() {
@@ -43,8 +38,9 @@ func main() {
 		})
 	})
 	r.POST("/create", func(c *gin.Context) {
-		var product PostProduct
+		var product Product
 		c.BindJSON(&product)
+		db.Create(&product)
 		c.JSON(200, gin.H{
 			"message": "登録成功!",
 			"price":   product.Price,

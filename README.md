@@ -4,9 +4,24 @@ goでDBを使わないシンプルなAPIを作成するための練習
 
 ## 起動方法
 
+```bash
+docker-compose up -d
 ```
-go run main.go
+
+最初にDB migrateしていますので起動するたびにデータも飛びます
+
+## 使い方
+
+```bash
+curl -X POST http://localhost:8080/create \
+    -H "Content-Type: application/json" -d '{"price":10000, "code":"hoge"}'
 ```
+
+```bash
+curl http://localhost:8080/product/1
+```
+
+
 
 ## 検証方法
 
